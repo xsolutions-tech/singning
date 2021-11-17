@@ -7,23 +7,30 @@ import base64
 import hashlib
 import subprocess
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 
 @app.route('/SigningService', methods=['POST'])
 def Sigining():
     if request.method == 'POST':
-        #         Serialize=request.form
         ToSerialize = request.data
         js=ToSerialize.decode("utf-8")
         f = open("SourceDocumentJson.json", "w")
         f.write(js)
         f.close()
+        ff = open("FullSignedDocument.json", "w")
+        ff.write(js)
+        ff.close()
         subprocess.run('SubmitInvoices.bat',capture_output=True)
         f = open("FullSignedDocument.json", "r")
         FullSignedDocument = f.read()
-        return FullSignedDocument
+        print(FullSignedDocument)
+        open("FullSignedDocument.json", "w")
+        # return FullSignedDocument
+        # print(json.loads(FullSignedDocument)['documents'][0]['signatures'])
+        # return json.dumps(json.loads(FullSignedDocument))
+        return json.dumps(FullSignedDocument)
 
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run("0.0.0.0", "5050")
